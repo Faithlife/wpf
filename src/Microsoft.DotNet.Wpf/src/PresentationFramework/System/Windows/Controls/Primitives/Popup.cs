@@ -2033,7 +2033,7 @@ namespace System.Windows.Controls.Primitives
                 CustomPopupPlacementCallback customCallback = CustomPopupPlacementCallback;
                 if (customCallback != null)
                 {
-                    customPlacements = customCallback(childBounds.Size, targetBounds.Size, new Point(HorizontalOffset, VerticalOffset));
+                    customPlacements = customCallback(childBounds.Size, targetBounds.Size, TranslateDisplayOffsetForScreenScale(new Point(HorizontalOffset, VerticalOffset)));
                 }
                 positions = customPlacements == null ? 0 : customPlacements.Length;
 
@@ -2217,6 +2217,43 @@ namespace System.Windows.Controls.Primitives
                 _positionInfo.Y = bestY;
                 _secHelper.SetPopupPos(true, bestX, bestY, false, 0, 0);
             }
+        }
+
+        // Ensure that the display offset is transformed to the device. This is required
+        // because childBounds and targetBounds have both been translated to device.
+        // If we translate one value, but not the other, the callback will not have enough
+        // information to effectively move items around the screen.
+        private Point TranslateDisplayOffsetForScreenScale(Point displayOffset)
+        {
+            PlacementMode placement = PlacementInternal;
+            var transformedOffset = displayOffset;
+            UIElement target = GetTarget() as UIElement;
+            if (target == null || IsAbsolutePlacementMode(placement))
+            {
+                transformedOffset = _secHelper.GetTransformToDevice().Transform(displayOffset);
+            }
+            else
+            {
+                // Point needs transformed (and can be transformed)
+                Visual rootVisual = GetRootVisual(target);
+                GeneralTransform targetToClientTransform = TransformToClient(target, rootVisual);
+
+                // transform point to the screen coordinate space
+                targetToClientTransform.TryTransform(transformedOffset, out transformedOffset);
+                transformedOffset = _secHelper.ClientToScreen(rootVisual, transformedOffset);
+
+                // We also need to transform a point of 0,0 to the screen coordinate
+                // space. This allows us to then back out the translation because we
+                // only want to use the offset in 0,0 based space, but scaled.
+                var displayOffsetForZero = new Point(0, 0);
+                targetToClientTransform.TryTransform(displayOffsetForZero, out displayOffsetForZero);
+                displayOffsetForZero = _secHelper.ClientToScreen(rootVisual, displayOffsetForZero);
+
+                transformedOffset.X -= displayOffsetForZero.X;
+                transformedOffset.Y -= displayOffsetForZero.Y;
+            }
+
+            return transformedOffset;
         }
 
         // Finds the screen size and limiting dimension.
