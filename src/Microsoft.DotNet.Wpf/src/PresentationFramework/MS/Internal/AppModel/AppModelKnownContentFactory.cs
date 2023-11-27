@@ -9,7 +9,7 @@
 
 using System;
 using System.IO;
-using System.Security; 
+using System.Security;
 using System.Windows;
 using System.Windows.Markup;
 using System.Windows.Navigation;
@@ -24,8 +24,8 @@ using System.Windows.Controls;
 
 namespace MS.Internal.AppModel
 {
-    // !!!! Note: Those methods are registered as MimeObjectFactory.StreamToObjectFactoryDelegate. The caller expects the 
-    // delgate to close stream. 
+    // !!!! Note: Those methods are registered as MimeObjectFactory.StreamToObjectFactoryDelegate. The caller expects the
+    // delgate to close stream.
     internal static class AppModelKnownContentFactory
     {
         // <summary>
@@ -41,13 +41,13 @@ namespace MS.Internal.AppModel
             asyncObjectConverter = null;
             if (isUnsafe)
             {
-                throw new InvalidOperationException(SR.Get(SRID.BamlIsNotSupportedOutsideOfApplicationResources));
+                throw new InvalidOperationException(SR.Format(SR.BamlIsNotSupportedOutsideOfApplicationResources));
             }
             // If this stream comes from outside the application throw
             //
             if (!BaseUriHelper.IsPackApplicationUri(baseUri))
             {
-                throw new InvalidOperationException(SR.Get(SRID.BamlIsNotSupportedOutsideOfApplicationResources));
+                throw new InvalidOperationException(SR.BamlIsNotSupportedOutsideOfApplicationResources);
             }
 
             // If this stream comes from a content file also throw
@@ -56,7 +56,7 @@ namespace MS.Internal.AppModel
             BaseUriHelper.GetAssemblyNameAndPart(partUri, out partName, out assemblyName, out assemblyVersion, out assemblyKey);
             if (ContentFileHelper.IsContentFile(partName))
             {
-                throw new InvalidOperationException(SR.Get(SRID.BamlIsNotSupportedOutsideOfApplicationResources));
+                throw new InvalidOperationException(SR.BamlIsNotSupportedOutsideOfApplicationResources);
             }
 
             ParserContext pc = new ParserContext();
@@ -139,13 +139,13 @@ namespace MS.Internal.AppModel
             asyncObjectConverter = null;
             if (isUnsafe)
             {
-                throw new InvalidOperationException(SR.Get(SRID.BamlIsNotSupportedOutsideOfApplicationResources));
+                throw new InvalidOperationException(SR.Format(SR.BamlIsNotSupportedOutsideOfApplicationResources));
             }
             if (canUseTopLevelBrowser)
             {
                 return null;
             }
-            
+
             if (SecurityHelper.AreStringTypesEqual(baseUri.Scheme, BaseUriHelper.PackAppBaseUri.Scheme))
             {
                 baseUri = BaseUriHelper.ConvertPackUriToAbsoluteExternallyVisibleUri(baseUri);

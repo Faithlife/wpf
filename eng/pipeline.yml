@@ -24,10 +24,10 @@ jobs:
       binlogPath: artifacts/log/Debug/x86/Build.binlog
       pool:
         ${{ if eq(variables['System.TeamProject'], 'public') }}:
-          name: NetCore-Svc-Public
+          name: NetCore-Public
           demands: ImageOverride -equals windows.vs2022preview.amd64.Open
         ${{ if eq(variables['System.TeamProject'], 'internal') }}:
-          name: NetCore1ESPool-Svc-Internal
+          name: NetCore1ESPool-Internal
           demands: ImageOverride -equals windows.vs2022preview.amd64
     helixRepo: $(repoName)
 
@@ -37,6 +37,8 @@ jobs:
       pool:
         vmImage: windows-2022
       variables:
+        - name: Codeql.Enabled
+          value: true
         # needed for signing
         - name: _TeamName
           value: DotNetCore
@@ -64,6 +66,20 @@ jobs:
           value: ''
         - name: _HelixCreator
           value: ${{ parameters.repoName }}
+        - name: _programfilesx86
+          value: ${Env:ProgramFiles(x86)}/dotnet          
+        - name: _programfiles
+          value:  ${Env:ProgramFiles}/dotnet
+        - ${{ if ne(variables['System.TeamProject'], 'internal') }}:
+          - name: _InternalRuntimeDownloadArgs
+            value: ''
+        - ${{ if eq(variables['System.TeamProject'], 'internal') }}:
+          - group: DotNetBuilds storage account read tokens
+          - group: AzureDevOps-Artifact-Feeds-Pats
+          - name: _InternalRuntimeDownloadArgs
+            value: >-
+              /p:DotNetRuntimeSourceFeed=https://dotnetbuilds.blob.core.windows.net/internal
+              /p:DotNetRuntimeSourceFeedKey=$(dotnetbuilds-internal-container-read-token-base64)
 
 
         # Override some values if we're building internally
@@ -116,7 +132,7 @@ jobs:
         displayName: Pre-Build - Set VSO Variables
 
       # Use utility script to run script command dependent on agent OS.
-      - script: eng\common\cibuild.cmd
+      - script: eng\scripts\cibuild.cmd
           -configuration $(_BuildConfig) 
           -prepareMachine
           $(_PublishArgs)
@@ -130,6 +146,131 @@ jobs:
         #   (!_HelixPipeline) ||
         #   (_HelixPipeline && _PublicBuildPipeline && _ContinuousIntegrationTestsEnabled && _BuildConfig == Release)
         condition: or(ne(variables['_HelixPipeline'], 'true'), and(eq(variables['_HelixPipeline'], 'true') ,eq(variables['_BuildConfig'], 'Release'), eq(variables['_PublicBuildPipeline'], 'true'), eq(variables['_ContinuousIntegrationTestsEnabled'], 'true')))
+
+      - script: eng\scripts\ciunittest.cmd
+          -configuration $(_BuildConfig) 
+          -prepareMachine
+          $(_PublishArgs)
+          $(_SignArgs)
+          $(_OfficialBuildIdArgs)
+          $(_PlatformArgs)
+          $(_InternalRuntimeDownloadArgs)
+        displayName: Windows Build / Publish
+        condition: and(or(ne(variables['_HelixPipeline'], 'true'), and(eq(variables['_HelixPipeline'], 'true') ,eq(variables['_BuildConfig'], 'Release'), eq(variables['_PublicBuildPipeline'], 'true'), eq(variables['_ContinuousIntegrationTestsEnabled'], 'true'))), ne(variables['_Platform'], 'arm64'))
+
+      - task: PublishTestResults@2
+        displayName: Publish XUnit Test Results
+        inputs:
+          testResultsFormat: 'xUnit'
+          testResultsFiles: '*.xml' 
+          searchFolder: '$(Build.SourcesDirectory)/artifacts/TestResults/$(_BuildConfig)'
+          mergeTestResults: true
+        continueOnError: true
+        condition: and(succeeded(), eq(variables['_BuildConfig'], 'Release'), ne(variables['_Platform'], 'arm64'))     
+
+      - task: PowerShell@2
+        displayName: Install .NET Core
+        inputs:
+          filePath: $(Build.SourcesDirectory)/dotnet-test-install.ps1
+          arguments: -InstallDir $(_programfiles) -Architecture $(_Platform) -Runtime dotnet  -Channel 8.0 -Quality daily
+          condition: eq(variables['_Platform'], 'x64')
+      
+      - task: PowerShell@2
+        displayName: Install .NET Core(x86)
+        inputs:
+          filePath: $(Build.SourcesDirectory)/dotnet-test-install.ps1
+          arguments: -InstallDir $(_programfilesx86) -Architecture $(_Platform) -Runtime dotnet  -Channel 8.0 -Quality daily
+        condition: eq(variables['_Platform'], 'x86')
+  
+      - task: PowerShell@2
+        displayName: Install .NET WindowsDesktop
+        inputs:
+          filePath: $(Build.SourcesDirectory)/dotnet-test-install.ps1
+          arguments: -InstallDir $(_programfiles) -Architecture $(_Platform) -Runtime windowsdesktop  -Channel 8.0 -Quality daily
+        condition: eq(variables['_Platform'], 'x64')
+     
+      - task: PowerShell@2
+        displayName: Install .NET WindowsDesktop(x86)
+        inputs:
+          filePath: $(Build.SourcesDirectory)/dotnet-test-install.ps1
+          arguments: -InstallDir $(_programfilesx86) -Architecture $(_Platform) -Runtime windowsdesktop  -Channel 8.0 -Quality daily
+        condition: eq(variables['_Platform'], 'x86')  
+
+      - task: PowerShell@2
+        displayName: Replace WPF binaries
+        inputs:
+          targetType: 'inline'
+          script: '.\eng\copy-wpf.ps1 -testhost -destination .dotnet -$(_BuildConfig) -arch $(_Platform)'
+        condition: and(eq(variables['System.TeamProject'], 'public'), ne(variables['_Platform'], 'arm64'))
+
+      - task: DownloadPipelineArtifact@2
+        displayName: Fetch Test Binaries
+        inputs:
+          buildType: 'specific'
+          project: 'cbb18261-c48f-4abb-8651-8cdcb5474649'
+          pipeline: '81'
+          buildVersionToDownload: 'latestFromBranch'
+          branchName: 'refs/heads/main'
+          downloadPath: '$(System.ArtifactsDirectory)\testbinzip\'
+          checkDownloadedFiles: true
+          artifactName: Tests.$(_BuildConfig).$(_Platform).zip
+        condition: and(eq(variables['System.TeamProject'], 'public'), ne(variables['_Platform'], 'arm64'))
+
+      - task: ExtractFiles@1
+        displayName: Extract Test Bins
+        inputs:
+          archiveFilePatterns: '$(System.ArtifactsDirectory)\testbinzip\*.zip'
+          destinationFolder: '$(System.ArtifactsDirectory)\testbins'
+          cleanDestinationFolder: true
+          overwriteExistingFiles: true
+        condition: and(eq(variables['System.TeamProject'], 'public'), ne(variables['_Platform'], 'arm64'))
+
+      - task: PowerShell@2
+        displayName: Run Tests
+        inputs:
+          targetType: 'inline'
+          script: '.\CIRunDrts.cmd'
+          workingDirectory: '$(System.ArtifactsDirectory)\testbins'
+        condition: and(eq(variables['System.TeamProject'], 'public'), ne(variables['_Platform'], 'arm64'))
+      
+      - task: CopyFiles@2
+        inputs:
+          SourceFolder: 'C:\Users\cloudtest\AppData\Roaming\QualityVault\Run\Report\'
+          Contents: '**'
+          TargetFolder: '$(System.DefaultWorkingDirectory)\Results\'
+          CleanTargetFolder: true
+          OverWrite: true
+        condition: and(eq(variables['System.TeamProject'], 'public'), eq(variables['_Platform'], 'x64'), eq(variables['_BuildConfig'], 'Release'))
+        
+      - task: CopyFiles@2
+        inputs:
+          SourceFolder: 'C:\Users\cloudtest\AppData\Roaming\QualityVault\Run\Report\'
+          Contents: '**'
+          TargetFolder: '$(System.DefaultWorkingDirectory)\ResultsX86\'
+          CleanTargetFolder: true
+          OverWrite: true
+        condition: and(eq(variables['System.TeamProject'], 'public'), eq(variables['_Platform'], 'x86'), eq(variables['_BuildConfig'], 'Release'))
+
+      - task: PublishPipelineArtifact@1
+        inputs:
+          artifactName: 'TestResultsX64'
+          targetPath: '$(System.DefaultWorkingDirectory)\Results\'      
+        condition: and(eq(variables['System.TeamProject'], 'public'), eq(variables['_Platform'], 'x64'), eq(variables['_BuildConfig'], 'Release'))
+
+      - task: PublishPipelineArtifact@1
+        inputs:
+          artifactName: 'TestResultsX86'
+          targetPath: '$(System.DefaultWorkingDirectory)\ResultsX86\'
+        condition: and(eq(variables['System.TeamProject'], 'public'), eq(variables['_Platform'], 'x86'), eq(variables['_BuildConfig'], 'Release'))
+          
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: 'XUnit'
+          testResultsFiles: 'testResults.xml'
+          searchFolder: '$(System.DefaultWorkingDirectory)\Results\'
+          testRunTitle: 'Test results'
+          mergeTestResults: true
+        condition: eq(variables['System.TeamProject'], 'public')
 
       - task: AzurePowerShell@5
         displayName: Repackage Microsoft.WindowsDesktop.App
@@ -153,27 +294,3 @@ jobs:
           nuGetFeedType: internal
           publishVstsFeed: WPF/Public
         displayName: Publish NuGet packages
-
-      # Run DRTs
-      - powershell: eng\common\cibuild.cmd
-          -configuration $(_BuildConfig)
-          $(_OfficialBuildIdArgs) 
-          $(_PlatformArgs)
-          -projects $(Build.SourcesDirectory)\eng\helixpublish.proj
-          /bl:$(BUILD.SOURCESDIRECTORY)\artifacts\log\$(_BuildConfig)\HelixDrt.binlog
-        displayName: Run Developer Regression Tests on Helix Machine (Release)
-        env:
-          HelixSource: $(_HelixSource)
-          HelixType: 'tests/drt'
-          HelixBuild: $(Build.BuildNumber)
-          HelixTargetQueues: $(_TestHelixAgentPool)
-          HelixAccessToken: $(_HelixToken)              # only defined for internal CI
-          Creator: $(_HelixCreator)
-          SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-        # This condition should be kept in sync with the condition for cibuild.cmd step with displayName: "Windows Build / Publish"
-        # Only run ...
-        # ...When building on a Helix pipeline, only build Release configs
-        #
-        #   (_HelixPipeline && _PublicBuildPipeline && _ContinuousIntegrationTestsEnabled && _BuildConfig == Release)
-        #
-        condition: and(succeeded(), eq(variables['_HelixPipeline'], 'true') ,eq(variables['_BuildConfig'], 'Release'), eq(variables['_PublicBuildPipeline'], 'true'), eq(variables['_ContinuousIntegrationTestsEnabled'], 'true'))

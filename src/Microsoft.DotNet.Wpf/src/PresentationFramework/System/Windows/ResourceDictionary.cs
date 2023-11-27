@@ -147,7 +147,7 @@ namespace System.Windows
             {
                 if (value == null || String.IsNullOrEmpty(value.OriginalString))
                 {
-                    throw new ArgumentException(SR.Get(SRID.ResourceDictionaryLoadFromFailure, value == null ? "''" : value.ToString()));
+                    throw new ArgumentException(SR.Format(SR.ResourceDictionaryLoadFromFailure, value == null ? "''" : value.ToString()));
                 }
 
                 ResourceDictionaryDiagnostics.RemoveResourceDictionaryForUri(_source, this);
@@ -234,7 +234,7 @@ namespace System.Windows
 
                 if (loadedRD == null)
                 {
-                    throw new InvalidOperationException(SR.Get(SRID.ResourceDictionaryLoadFromFailure, _source.ToString()));
+                    throw new InvalidOperationException(SR.Format(SR.ResourceDictionaryLoadFromFailure, _source.ToString()));
                 }
 
                 // ReferenceCopy all the key-value pairs in the _baseDictionary
@@ -291,7 +291,7 @@ namespace System.Windows
         /// <param name="scopedElement">Element where name is defined</param>
         public void RegisterName(string name, object scopedElement)
         {
-            throw new NotSupportedException(SR.Get(SRID.NamesNotSupportedInsideResourceDictionary));
+            throw new NotSupportedException(SR.NamesNotSupportedInsideResourceDictionary);
         }
 
         /// <summary>
@@ -442,7 +442,7 @@ namespace System.Windows
         {
             if (IsReadOnly)
             {
-                throw new InvalidOperationException(SR.Get(SRID.ResourceDictionaryIsReadOnly));
+                throw new InvalidOperationException(SR.ResourceDictionaryIsReadOnly);
             }
 
             object oldValue = _baseDictionary[key];
@@ -637,7 +637,7 @@ namespace System.Windows
         {
             if (IsReadOnly)
             {
-                throw new InvalidOperationException(SR.Get(SRID.ResourceDictionaryIsReadOnly));
+                throw new InvalidOperationException(SR.ResourceDictionaryIsReadOnly);
             }
 
             // invalid during a VisualTreeChanged event
@@ -697,7 +697,7 @@ namespace System.Windows
         {
             if (IsReadOnly)
             {
-                throw new InvalidOperationException(SR.Get(SRID.ResourceDictionaryIsReadOnly));
+                throw new InvalidOperationException(SR.ResourceDictionaryIsReadOnly);
             }
 
             // invalid during a VisualTreeChanged event
@@ -828,7 +828,7 @@ namespace System.Windows
         {
             if (IsReadOnly)
             {
-                throw new InvalidOperationException(SR.Get(SRID.ResourceDictionaryIsReadOnly));
+                throw new InvalidOperationException(SR.ResourceDictionaryIsReadOnly);
             }
 
             // invalid during a VisualTreeChanged event
@@ -942,7 +942,7 @@ namespace System.Windows
             // Nested BeginInits on the same instance aren't permitted
             if (IsInitializePending)
             {
-                throw new InvalidOperationException(SR.Get(SRID.NestedBeginInitNotSupported));
+                throw new InvalidOperationException(SR.NestedBeginInitNotSupported);
             }
 
             IsInitializePending = true;
@@ -961,7 +961,7 @@ namespace System.Windows
             // EndInit without a BeginInit isn't permitted
             if (!IsInitializePending)
             {
-                throw new InvalidOperationException(SR.Get(SRID.EndInitWithoutBeginInitNotSupported));
+                throw new InvalidOperationException(SR.EndInitWithoutBeginInitNotSupported);
             }
             Debug.Assert(IsInitialized == false, "Dictionary should not be initialized when EndInit is called");
 
@@ -1126,12 +1126,12 @@ namespace System.Windows
                 }
                 else
                 {
-                    throw new InvalidOperationException(SR.Get(SRID.ResourceDictionaryDuplicateDeferredContent));
+                    throw new InvalidOperationException(SR.ResourceDictionaryDuplicateDeferredContent);
                 }
             }
             else if (keys.Count > 0)
             {
-                throw new InvalidOperationException(SR.Get(SRID.ResourceDictionaryDeferredContentFailure));
+                throw new InvalidOperationException(SR.ResourceDictionaryDeferredContentFailure);
             }
         }
 
@@ -1244,7 +1244,7 @@ namespace System.Windows
                 }
                 else
                 {
-                    throw new ArgumentException(SR.Get(SRID.KeyCollectionHasInvalidKey));
+                    throw new ArgumentException(SR.KeyCollectionHasInvalidKey);
                 }
             }
 
@@ -1454,7 +1454,7 @@ namespace System.Windows
                 }
                 else if (_ownerFEs.Contains(fe) && ContainsCycle(this))
                 {
-                    throw new InvalidOperationException(SR.Get(SRID.ResourceDictionaryInvalidMergedDictionary));
+                    throw new InvalidOperationException(SR.ResourceDictionaryInvalidMergedDictionary);
                 }
 
                 // Propagate the HasImplicitStyles flag to the new owner
@@ -1476,7 +1476,7 @@ namespace System.Windows
                     }
                     else if (_ownerFCEs.Contains(fce) && ContainsCycle(this))
                     {
-                        throw new InvalidOperationException(SR.Get(SRID.ResourceDictionaryInvalidMergedDictionary));
+                        throw new InvalidOperationException(SR.ResourceDictionaryInvalidMergedDictionary);
                     }
 
                     // Propagate the HasImplicitStyles flag to the new owner
@@ -1498,7 +1498,7 @@ namespace System.Windows
                         }
                         else if (_ownerApps.Contains(app) && ContainsCycle(this))
                         {
-                            throw new InvalidOperationException(SR.Get(SRID.ResourceDictionaryInvalidMergedDictionary));
+                            throw new InvalidOperationException(SR.ResourceDictionaryInvalidMergedDictionary);
                         }
 
                         // Propagate the HasImplicitStyles flag to the new owner

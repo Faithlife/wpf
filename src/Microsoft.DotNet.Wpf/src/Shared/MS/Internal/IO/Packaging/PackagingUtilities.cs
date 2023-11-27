@@ -17,7 +17,7 @@ using MS.Internal.WindowsBase;  // FriendAccessAllowed
 using System.Xml;               // For XmlReader
 using System.Diagnostics;       // For Debug.Assert
 using System.Text;              // For Encoding
-using System.Windows;           // For Exception strings - SRID
+using System.Windows;           // For Exception strings - SR
 using System.Security;                  // for SecurityCritical
 using Microsoft.Win32;                  // for Registry classes
 
@@ -81,8 +81,8 @@ namespace MS.Internal.IO.Packaging
                     //Note: For Byte order markings that require additional information to be specified in
                     //the encoding attribute in XmlDeclaration have already been ruled out by this check as we allow for
                     //only two valid values.
-                    if (String.CompareOrdinal(encoding, _webNameUTF8) == 0
-                        || String.CompareOrdinal(encoding, _webNameUnicode) == 0)
+                    if (string.Equals(encoding, _webNameUTF8, StringComparison.Ordinal)
+                        || string.Equals(encoding, _webNameUnicode, StringComparison.Ordinal))
                         return;
                     else
                         //if the encoding attribute has any other value we throw an exception

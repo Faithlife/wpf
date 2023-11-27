@@ -11,31 +11,41 @@ namespace Microsoft.Win32
         public virtual bool? ShowDialog() { throw null; }
         public bool? ShowDialog(System.Windows.Window owner) { throw null; }
     }
-    public abstract partial class FileDialog : Microsoft.Win32.CommonDialog
+    public abstract partial class CommonItemDialog : Microsoft.Win32.CommonDialog
     {
-        protected FileDialog() { }
-        public bool AddExtension { get { throw null; } set { } }
-        public virtual bool CheckFileExists { get { throw null; } set { } }
-        public bool CheckPathExists { get { throw null; } set { } }
+        private protected CommonItemDialog() { }
+        public bool AddToRecent { get { throw null; } set { } }
+        public System.Guid? ClientGuid { get; set; }
         public System.Collections.Generic.IList<Microsoft.Win32.FileDialogCustomPlace> CustomPlaces { get { throw null; } set { } }
-        public string DefaultExt { get { throw null; } set { } }
+        public string DefaultDirectory { get { throw null; } set { } }
         public bool DereferenceLinks { get { throw null; } set { } }
+        public string InitialDirectory { get { throw null; } set { } }
+        public string RootDirectory { get { throw null; } set { } }
+        public bool ShowHiddenItems { get; set; }
+        public string Title { get { throw null; } set { } }
+        public bool ValidateNames { get { throw null; } set { } }
+        protected virtual void OnItemOk(System.ComponentModel.CancelEventArgs e) { }
+        protected override bool RunDialog(System.IntPtr hwndOwner) { throw null; }
+        public override void Reset() { }
+        public override string ToString() { throw null; }
+    }
+    public abstract partial class FileDialog : Microsoft.Win32.CommonItemDialog
+    {
+        private protected FileDialog() { }
+        public bool AddExtension { get { throw null; } set { } }
+        public bool CheckFileExists { get { throw null; } set { } }
+        public bool CheckPathExists { get { throw null; } set { } }
+        public string DefaultExt { get { throw null; } set { } }
         public string FileName { get { throw null; } set { } }
         public string[] FileNames { get { throw null; } }
+        public event System.ComponentModel.CancelEventHandler FileOk { add { } remove { } }
         public string Filter { get { throw null; } set { } }
         public int FilterIndex { get { throw null; } set { } }
-        public string InitialDirectory { get { throw null; } set { } }
-        protected int Options { get { throw null; } }
+        protected override void OnItemOk(System.ComponentModel.CancelEventArgs e) { }
+        public override void Reset() { }
         public bool RestoreDirectory { get { throw null; } set { } }
         public string SafeFileName { get { throw null; } }
         public string[] SafeFileNames { get { throw null; } }
-        public string Title { get { throw null; } set { } }
-        public bool ValidateNames { get { throw null; } set { } }
-        public event System.ComponentModel.CancelEventHandler FileOk { add { } remove { } }
-        protected override System.IntPtr HookProc(System.IntPtr hwnd, int msg, System.IntPtr wParam, System.IntPtr lParam) { throw null; }
-        protected void OnFileOk(System.ComponentModel.CancelEventArgs e) { }
-        public override void Reset() { }
-        protected override bool RunDialog(System.IntPtr hwndOwner) { throw null; }
         public override string ToString() { throw null; }
     }
     public sealed partial class FileDialogCustomPlace
@@ -68,18 +78,32 @@ namespace Microsoft.Win32
     public sealed partial class OpenFileDialog : Microsoft.Win32.FileDialog
     {
         public OpenFileDialog() { }
+        public bool ForcePreviewPane { get; set; }
         public bool Multiselect { get { throw null; } set { } }
-        public bool ReadOnlyChecked { get { throw null; } set { } }
-        public bool ShowReadOnly { get { throw null; } set { } }
-        protected override void CheckPermissionsToShowDialog() { }
         public System.IO.Stream OpenFile() { throw null; }
         public System.IO.Stream[] OpenFiles() { throw null; }
+        public bool ReadOnlyChecked { get { throw null; } set { } }
         public override void Reset() { }
+        public bool ShowReadOnly { get { throw null; } set { } }
+    }
+    public sealed partial class OpenFolderDialog : Microsoft.Win32.CommonItemDialog
+    {
+        public OpenFolderDialog() { }
+        public string FolderName { get { throw null; } set { } }
+        public string[] FolderNames { get { throw null; } }
+        public event System.ComponentModel.CancelEventHandler FolderOk { add { } remove { } }
+        public bool Multiselect { get { throw null; } set { } }
+        protected override void OnItemOk(System.ComponentModel.CancelEventArgs e) { }
+        public override void Reset() { }
+        public string SafeFolderName { get { throw null; } }
+        public string[] SafeFolderNames { get { throw null; } }
+        public override string ToString() { throw null; }
     }
     public sealed partial class SaveFileDialog : Microsoft.Win32.FileDialog
     {
         public SaveFileDialog() { }
         public bool CreatePrompt { get { throw null; } set { } }
+        public bool CreateTestFile { get { throw null; } set { } }
         public bool OverwritePrompt { get { throw null; } set { } }
         public System.IO.Stream OpenFile() { throw null; }
         public override void Reset() { }
@@ -1104,7 +1128,9 @@ namespace System.Windows
         protected ResourceReferenceKeyNotFoundException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) { }
         public ResourceReferenceKeyNotFoundException(string message, object resourceKey) { }
         public object Key { get { throw null; } }
+#pragma warning disable CS0672 // Member overrides obsolete member
         public override void GetObjectData(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) { }
+#pragma warning restore CS0672 // Member overrides obsolete member
     }
     public partial class RoutedPropertyChangedEventArgs<T> : System.Windows.RoutedEventArgs
     {
@@ -11409,7 +11435,9 @@ namespace System.Windows.Markup
         public int LinePosition { get { throw null; } }
         public string NameContext { get { throw null; } }
         public string UidContext { get { throw null; } }
+#pragma warning disable CS0672 // Member overrides obsolete member
         public override void GetObjectData(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) { }
+#pragma warning restore CS0672 // Member overrides obsolete member
     }
     public partial class XamlReader
     {
@@ -11974,7 +12002,9 @@ namespace System.Windows.Navigation
         public System.Uri Source { get { throw null; } set { } }
         public static bool GetKeepAlive(System.Windows.DependencyObject dependencyObject) { throw null; }
         public static string GetName(System.Windows.DependencyObject dependencyObject) { throw null; }
+#pragma warning disable CS0672 // Member overrides obsolete member
         public virtual void GetObjectData(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) { }
+#pragma warning restore CS0672 // Member overrides obsolete member
         public static void SetKeepAlive(System.Windows.DependencyObject dependencyObject, bool keepAlive) { }
         public static void SetName(System.Windows.DependencyObject dependencyObject, string name) { }
     }

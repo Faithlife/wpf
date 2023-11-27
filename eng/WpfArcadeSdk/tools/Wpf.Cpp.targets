@@ -93,7 +93,7 @@
   <Target Name="CreateNativeResourceFileWithVersionInformation"
           AfterTargets="CreateNativeVersionFile"
           BeforeTargets="ResourceCompile"
-          DependsOnTargets="_InitializeAssemblyVersion;InitializeSourceControlInformationFromSourceControlManager"
+          DependsOnTargets="_InitializeAssemblyVersion;InitializeSourceControlInformation"
           Outputs="$(NativeResourceFileWithVersionInformation)"
           Returns="@(ResourceCompile)"
           Condition="('$(ConfigurationType)' == 'DynamicLibrary' Or '$(ConfigurationType)' == 'Application') And '$(IsRedistProject)' != 'true'">
@@ -397,7 +397,7 @@ using namespace System::Runtime::Versioning;
 
     <WriteLinesToFile Lines="%(CppClrSupportProject.Text)"
                       File="$(CppCliHelperProject)"
-                      Overwrite="false" WriteOnlyWhenDifferent="true" />
+                      Overwrite="false" WriteOnlyWhenDifferent="false" />
 
     <!--
     Do not build - just ask ResolveReferences + IdentifyNetCoreReferences for the information
@@ -551,7 +551,7 @@ using namespace System::Runtime::Versioning;
 
     <WriteLinesToFile Lines="%(CppSupportProject.Text)"
                       File="$(CppHelperProject)"
-                      Overwrite="false" WriteOnlyWhenDifferent="true" />
+                      Overwrite="false" WriteOnlyWhenDifferent="false" />
 
     <!--
     Do not build - just ask IdentifyNetCoreReferences for the information

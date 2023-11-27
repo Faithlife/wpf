@@ -79,7 +79,7 @@ namespace System.Windows.Controls
             EventManager.RegisterClassHandler(typeof(ListBox), Mouse.MouseUpEvent, new MouseButtonEventHandler(OnMouseButtonUp), true);
             EventManager.RegisterClassHandler(typeof(ListBox), Keyboard.GotKeyboardFocusEvent, new KeyboardFocusChangedEventHandler(OnGotKeyboardFocus));
 
-            CommandHelpers.RegisterCommandHandler(typeof(ListBox), ListBox.SelectAllCommand, new ExecutedRoutedEventHandler(OnSelectAll), new CanExecuteRoutedEventHandler(OnQueryStatusSelectAll), KeyGesture.CreateFromResourceStrings(ListBoxSelectAllKey, SR.Get(SRID.ListBoxSelectAllKeyDisplayString)));
+            CommandHelpers.RegisterCommandHandler(typeof(ListBox), ListBox.SelectAllCommand, new ExecutedRoutedEventHandler(OnSelectAll), new CanExecuteRoutedEventHandler(OnQueryStatusSelectAll), KeyGesture.CreateFromResourceStrings(ListBoxSelectAllKey, SR.ListBoxSelectAllKeyDisplayString));
 
             ControlsTraceLogger.AddControl(TelemetryControls.ListBox);
             AppContext.TryGetSwitch("System.Windows.Controls.OptOutOfGridColumnResizeUsingKeyboard", out OptOutOfGridColumnResizeUsingKeyboard);
@@ -106,7 +106,7 @@ namespace System.Windows.Controls
             }
             else
             {
-                throw new NotSupportedException(SR.Get(SRID.ListBoxSelectAllSelectionMode));
+                throw new NotSupportedException(SR.ListBoxSelectAllSelectionMode);
             }
         }
 
@@ -319,7 +319,7 @@ namespace System.Windows.Controls
                 case Key.Divide:
                 case Key.Oem2:
                     // Ctrl-Fowardslash = Select All
-                    if (((Keyboard.Modifiers & ModifierKeys.Control) == (ModifierKeys.Control)) && (SelectionMode == SelectionMode.Extended))
+                    if (((Keyboard.Modifiers) == (ModifierKeys.Control)) && (SelectionMode == SelectionMode.Extended))
                     {
                         SelectAll();
                     }
@@ -332,7 +332,7 @@ namespace System.Windows.Controls
 
                 case Key.Oem5:
                     // Ctrl-Backslash = Select the item with focus.
-                    if (((Keyboard.Modifiers & ModifierKeys.Control) == (ModifierKeys.Control)) && (SelectionMode == SelectionMode.Extended))
+                    if (((Keyboard.Modifiers) == (ModifierKeys.Control)) && (SelectionMode == SelectionMode.Extended))
                     {
                         ListBoxItem focusedItemUI = (FocusedInfo != null) ? FocusedInfo.Container as ListBoxItem : null;
                         if (focusedItemUI != null)
@@ -361,9 +361,9 @@ namespace System.Windows.Controls
                         {
                             shouldScroll =
                                 ((key == Key.Down && IsLogicalHorizontal && DoubleUtil.GreaterThan(ScrollHost.ScrollableHeight, ScrollHost.VerticalOffset))) ||
-                                ((key == Key.Up   && IsLogicalHorizontal && DoubleUtil.GreaterThan(ScrollHost.VerticalOffset, 0d))) ||
+                                ((key == Key.Up   && IsLogicalHorizontal && DoubleUtil.GreaterThanZero(ScrollHost.VerticalOffset))) ||
                                 ((key == Key.Right&& IsLogicalVertical && DoubleUtil.GreaterThan(ScrollHost.ScrollableWidth, ScrollHost.HorizontalOffset))) ||
-                                ((key == Key.Left && IsLogicalVertical && DoubleUtil.GreaterThan(ScrollHost.HorizontalOffset, 0d)));
+                                ((key == Key.Left && IsLogicalVertical && DoubleUtil.GreaterThanZero(ScrollHost.HorizontalOffset)));
                         }
 
                         if (shouldScroll)
@@ -493,7 +493,7 @@ namespace System.Windows.Controls
                         handled = false;
                         break;
                     }
-
+                    
                     Key skey = e.SystemKey;
                     switch (skey)
                     {
@@ -1013,7 +1013,7 @@ namespace System.Windows.Controls
                     ListBoxItem listBoxItem = info.Container as ListBoxItem;
                     if (listBoxItem == null)
                     {
-                        throw new InvalidOperationException(SR.Get(SRID.ListBoxInvalidAnchorItem, value));
+                        throw new InvalidOperationException(SR.Format(SR.ListBoxInvalidAnchorItem, value));
                     }
 
                     AnchorItemInternal = info;
@@ -1061,7 +1061,7 @@ namespace System.Windows.Controls
         private const double ColumnWidthStepSize = 10d;
 
         private static RoutedUICommand SelectAllCommand =
-            new RoutedUICommand(SR.Get(SRID.ListBoxSelectAllText), "SelectAll", typeof(ListBox));
+            new RoutedUICommand(SR.ListBoxSelectAllText, "SelectAll", typeof(ListBox));
 
         #endregion
 

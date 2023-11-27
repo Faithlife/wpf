@@ -1000,7 +1000,7 @@ namespace System.Windows.Controls
                     }
                 }
 
-                if(!IsDataGridKeyboardSortDisabled)
+                if (!IsDataGridKeyboardSortDisabled)
                 {
                     if (e.Key == Key.F3 && Column != null && Column.CanUserSort)
                     {
