@@ -28,17 +28,6 @@ steps:
   condition: eq(variables['Agent.Os'], 'Linux')
   continueOnError: ${{ parameters.sbomContinueOnError }}
 
-- task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
-  displayName: 'Generate SBOM manifest'
-  continueOnError: ${{ parameters.sbomContinueOnError }}
-  inputs:
-      PackageName: ${{ parameters.packageName }}
-      BuildDropPath: ${{ parameters.buildDropPath }}
-      PackageVersion: ${{ parameters.packageVersion }}
-      ManifestDirPath: ${{ parameters.manifestDirPath }}
-      ${{ if ne(parameters.IgnoreDirectories, '') }}:
-        AdditionalComponentDetectorArgs: '--IgnoreDirectories ${{ parameters.IgnoreDirectories }}'
-
 - task: PublishPipelineArtifact@1
   displayName: Publish SBOM manifest
   continueOnError: ${{parameters.sbomContinueOnError}}
