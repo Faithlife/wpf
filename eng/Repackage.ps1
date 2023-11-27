@@ -1,5 +1,5 @@
 $baseNuGetPackage = 'Microsoft.WindowsDesktop.App.Runtime.win-x64'
-$baseNuGetVersion = '7.0.11'
+$baseNuGetVersion = '8.0.0'
 
 $lastBuiltLocalPackage = (Get-ChildItem .\artifacts\obj\Microsoft.DotNet.Wpf.GitHub\Release\*.nuspec | Sort-Object LastWriteTime | Select-Object -last 1).Name
 $lastBuiltLocalVersion = $lastBuiltLocalPackage.Replace('runtime.win-x64.Microsoft.DotNet.Wpf.GitHub.','').Replace('.nuspec','')
@@ -44,9 +44,6 @@ $nuspec.package.metadata.description = "Custom build of WPF built by Faithlife"
 $nuspec.package.metadata.copyright = "© .NET Foundation and Contributors"
 $nuspec.package.metadata.repository.url = "https://github.com/Faithlife/wpf.git"
 $nuspec.package.metadata.repository.commit = $(git rev-parse HEAD)
-($nuspec | Select-Xml '/nuspec:package/nuspec:metadata/nuspec:requireLicenseAcceptance' -Namespace $ns).Node | ForEach-Object{ $_.ParentNode.RemoveChild($_) } | Out-Null
-($nuspec | Select-Xml '/nuspec:package/nuspec:metadata/nuspec:icon' -Namespace $ns).Node | ForEach-Object{ $_.ParentNode.RemoveChild($_) } | Out-Null
-($nuspec | Select-Xml '/nuspec:package/nuspec:metadata/nuspec:serviceable' -Namespace $ns).Node | ForEach-Object{ $_.ParentNode.RemoveChild($_) } | Out-Null
 $nuspec.Save($nuspecPath)
 
 $psmdcpPath = Resolve-Path "$packagingRoot\package\services\metadata\core-properties\*.psmdcp"
@@ -56,7 +53,7 @@ $psmdcpPath = Resolve-Path "$packagingRoot\package\services\metadata\core-proper
 ($psmdcp | Select-Xml '/cp:coreProperties/cp:version' -Namespace $ns).Node.InnerText = $nuspec.package.metadata.version
 $psmdcp.Save($psmdcpPath)
 
-$managedRoot = ".\artifacts\packaging\Release\x64\Microsoft.DotNet.Wpf.GitHub\lib\net7.0"
+$managedRoot = ".\artifacts\packaging\Release\x64\Microsoft.DotNet.Wpf.GitHub\lib\net8.0"
 $nativeRoot = ".\artifacts\packaging\Release\x64\Microsoft.DotNet.Wpf.GitHub\runtimes\win-x64\native"
 
 $runtimeListPath = Resolve-Path "$packagingRoot\data\RuntimeList.xml"
@@ -65,7 +62,7 @@ foreach ($file in $runtimeList.FileList.File)
 {
 	if ($file.Type -eq 'Managed' || $file.Type -eq 'Resources')
 	{
-		$path = $file.Path.Replace('runtimes/win-x64/lib/net7.0/', '')
+		$path = $file.Path.Replace('runtimes/win-x64/lib/net8.0/', '')
 		if (Test-Path("$managedRoot\$path"))
 		{
 			$destination = Resolve-Path "$packagingRoot\$($file.Path)"
