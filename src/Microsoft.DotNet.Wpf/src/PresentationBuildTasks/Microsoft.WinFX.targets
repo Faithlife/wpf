@@ -232,7 +232,6 @@
                DefineConstants="$(DefineConstants)"
                ExtraBuildControlFiles="@(ExtraBuildControlFiles)"
                XamlDebuggingInformation="$(XamlDebuggingInformation)"
-               ChecksumAlgorithm="$(ChecksumAlgorithm)"
                IsRunningInVisualStudio="$(BuildingInsideVisualStudio)"
                OutputPath="$(IntermediateOutputPath)"
                SupportCustomOutputPaths="$(IncludePackageReferencesDuringMarkupCompilation)">

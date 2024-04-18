@@ -1,5 +1,5 @@
 $baseNuGetPackage = 'Microsoft.WindowsDesktop.App.Runtime.win-x64'
-$baseNuGetVersion = '8.0.0'
+$baseNuGetVersion = '8.0.4'
 
 $lastBuiltLocalPackage = (Get-ChildItem .\artifacts\obj\Microsoft.DotNet.Wpf.GitHub\Release\*.nuspec | Sort-Object LastWriteTime | Select-Object -last 1).Name
 $lastBuiltLocalVersion = $lastBuiltLocalPackage.Replace('runtime.win-x64.Microsoft.DotNet.Wpf.GitHub.','').Replace('.nuspec','')
