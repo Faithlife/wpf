@@ -3,7 +3,7 @@
   <PropertyGroup>
     <MajorVersion>8</MajorVersion>
     <MinorVersion>0</MinorVersion>
-    <PatchVersion>1</PatchVersion>
+    <PatchVersion>5</PatchVersion>
     <PreReleaseVersionLabel>faithlife</PreReleaseVersionLabel>
     <PreReleaseVersionIteration>1</PreReleaseVersionIteration>
     <VersionPrefix>$(MajorVersion).$(MinorVersion).$(PatchVersion)</VersionPrefix>
@@ -21,18 +21,18 @@
   </PropertyGroup>
   <!-- Packages that come from https://github.com/dotnet/winforms -->
   <PropertyGroup>
-    <MicrosoftPrivateWinformsVersion>8.0.0-rtm.23531.5</MicrosoftPrivateWinformsVersion>
+    <MicrosoftPrivateWinformsVersion>8.0.3-servicing.24116.3</MicrosoftPrivateWinformsVersion>
   </PropertyGroup>
   <!-- Packages that come from https://github.com/dotnet/runtime -->
   <PropertyGroup>
-    <VSRedistCommonNetCoreSharedFrameworkx6480PackageVersion>8.0.0-rtm.23531.3</VSRedistCommonNetCoreSharedFrameworkx6480PackageVersion>
-    <MicrosoftNETCoreAppRefVersion>8.0.0</MicrosoftNETCoreAppRefVersion>
-    <MicrosoftNETCoreAppRuntimewinx64Version>8.0.0</MicrosoftNETCoreAppRuntimewinx64Version>
-    <MicrosoftNETCorePlatformsVersion>8.0.0-rtm.23531.3</MicrosoftNETCorePlatformsVersion>
+    <VSRedistCommonNetCoreSharedFrameworkx6480PackageVersion>8.0.3-servicing.24114.23</VSRedistCommonNetCoreSharedFrameworkx6480PackageVersion>
+    <MicrosoftNETCoreAppRefVersion>8.0.3</MicrosoftNETCoreAppRefVersion>
+    <MicrosoftNETCoreAppRuntimewinx64Version>8.0.3</MicrosoftNETCoreAppRuntimewinx64Version>
+    <MicrosoftNETCorePlatformsVersion>8.0.3-servicing.24114.23</MicrosoftNETCorePlatformsVersion>
     <SystemCodeDomPackageVersion>8.0.0</SystemCodeDomPackageVersion>
     <SystemConfigurationConfigurationManagerPackageVersion>8.0.0</SystemConfigurationConfigurationManagerPackageVersion>
     <SystemDiagnosticsEventLogPackageVersion>8.0.0</SystemDiagnosticsEventLogPackageVersion>
-    <SystemDrawingCommonVersion>8.0.0</SystemDrawingCommonVersion>
+    <SystemDrawingCommonVersion>8.0.3</SystemDrawingCommonVersion>
     <SystemDirectoryServicesVersion>8.0.0</SystemDirectoryServicesVersion>
     <SystemIOPackagingVersion>8.0.0</SystemIOPackagingVersion>
     <SystemReflectionMetadataLoadContextVersion>8.0.0</SystemReflectionMetadataLoadContextVersion>
@@ -48,8 +48,8 @@
   </PropertyGroup>
   <!-- Packages that come from https://github.com/dotnet/arcade -->
   <PropertyGroup>
-    <MicrosoftDotNetApiCompatVersion>8.0.0-beta.23564.4</MicrosoftDotNetApiCompatVersion>
-    <MicrosoftDotNetCodeAnalysisPackageVersion>8.0.0-beta.23564.4</MicrosoftDotNetCodeAnalysisPackageVersion>
+    <MicrosoftDotNetApiCompatVersion>8.0.0-beta.24113.2</MicrosoftDotNetApiCompatVersion>
+    <MicrosoftDotNetCodeAnalysisPackageVersion>8.0.0-beta.24113.2</MicrosoftDotNetCodeAnalysisPackageVersion>
   </PropertyGroup>
   <!-- Sourcelink -->
   <PropertyGroup>
@@ -97,6 +97,6 @@
     <SystemReflectionMetadataLoadContextPackage>System.Reflection.MetadataLoadContext</SystemReflectionMetadataLoadContextPackage>
   </PropertyGroup>
   <PropertyGroup>
-    <MicrosoftDotNetWpfDncEngVersion>8.0.0-rtm.23569.1</MicrosoftDotNetWpfDncEngVersion>
+    <MicrosoftDotNetWpfDncEngVersion>8.0.0-rtm.24178.1</MicrosoftDotNetWpfDncEngVersion>
   </PropertyGroup>
 </Project>
